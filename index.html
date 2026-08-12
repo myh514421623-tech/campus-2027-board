@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="2027届商科校招看板 · 财经/审计/税务/咨询/管培/人力/战略岗位实时汇总" />
+  <title>2027届商科校招看板</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8f9fb; --card-bg: #fff; --text: #111827; --text2: #6b7280; --text3: #9ca3af;
+      --border: #e5e7eb; --blue: #2556B6; --radius: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0f1117; --card-bg: #1a1c24; --text: #e5e7eb; --text2: #9ca3af; --text3: #6b7280; --border: #2a2c34; }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sora', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+    header { margin-bottom: 20px; }
+    header h1 { font-size: 26px; font-weight: 700; }
+    header h1 span { font-weight: 200; }
+    header p { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+    #search { flex: 1; min-width: 200px; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text); font-family: inherit; }
+    #search:focus { outline: none; border-color: var(--blue); }
+    .filters { display: flex; gap: 5px; flex-wrap: wrap; }
+    .f-chip { padding: 5px 12px; border-radius: 16px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--card-bg); color: var(--text2); cursor: pointer; font-family: inherit; transition: all .15s; }
+    .f-chip:hover, .f-chip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .count { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
+    .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; transition: border-color .15s; }
+    .card:hover { border-color: var(--blue); }
+    .card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .card__title { font-size: 13px; font-weight: 600; line-height: 1.35; }
+    .card__company { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .card__tag { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .tg-audit{background:#EBF0FF;color:#2556B6}.tg-tax{background:#FFF0E6;color:#E07B3C}.tg-consult{background:#E8F4F0;color:#2D8A6A}.tg-finance{background:#F0E8FF;color:#6B3FA0}.tg-trainee{background:#FFF4D9;color:#B8860B}.tg-banking{background:#E6F0FA;color:#1A6094}.tg-hr{background:#FFE8F0;color:#C73E6F}.tg-mkt{background:#E0F2FE;color:#0C6B9E}.tg-strategy{background:#FEE8E5;color:#A84330}.tg-supply{background:#ECF5E8;color:#4A8230}
+    .card__loc { font-size: 11px; color: var(--text2); }
+    .card__ft { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
+    .card__link { font-size: 11px; color: var(--blue); text-decoration: none; font-weight: 500; }
+    .card__link:hover { text-decoration: underline; }
+    .card__dl { font-size: 10px; color: var(--text3); }
+    .updated { font-size: 11px; color: var(--text3); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
+    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>2027届 · <span>商科校招看板</span></h1>
+    <p>一岗一卡 · 审计 / 税务 / 咨询 / 财务 / 管培 / 投行 / 人力 / 市场 / 战略 / 供应链 · 数据每日更新</p>
+  </header>
+  <div class="toolbar">
+    <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="updated" id="updated"></div>
+</div>
+
+<script>
+(function(){
+  var JOBS = [
+    // DO NOT EDIT HERE — data block is injected by daily update script
+    // ==== DATA_START ====
+    {c:'普华永道 PwC',t:'审计及鉴证服务 · 审计师',g:'审计',l:'北上广深/香港/成都等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
+    {c:'普华永道 PwC',t:'税务及商务咨询 · 顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
+    {c:'普华永道 PwC',t:'管理咨询 · 顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
+    {c:'普华永道 PwC',t:'交易服务 Edge · 交易顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
+    {c:'普华永道 PwC',t:'风险及控制 · 风控顾问',g:'审计',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
+    {c:'德勤 Deloitte',t:'审计及鉴证 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
+    {c:'德勤 Deloitte',t:'税务与商务咨询 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
+    {c:'德勤 Deloitte',t:'管理咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
+    {c:'德勤 Deloitte',t:'财务咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
+    {c:'安永 EY',t:'审计 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
+    {c:'安永 EY',t:'税务 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
+    {c:'安永 EY',t:'咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
+    {c:'安永 EY',t:'战略与交易咨询 · 顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
+    {c:'毕马威 KPMG',t:'审计 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
+    {c:'毕马威 KPMG',t:'税务 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
+    {c:'毕马威 KPMG',t:'咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
+    {c:'天健会计师事务所',t:'财务审计 · 审计员',g:'审计',l:'杭州/北京/上海/深圳等',u:'https://zhaopin.pccpa.cn/hr/recruit/school',s:'2026/7',d:'招满即止'},
+    {c:'信永中和',t:'审计 · 审计助理',g:'审计',l:'全国',u:'https://job.shinewing.com/job/campus',s:'2026/8',d:'招满即止'},
+    {c:'信永中和',t:'税务 · 税务助理',g:'税务',l:'全国',u:'https://job.shinewing.com/job/campus',s:'2026/8',d:'招满即止'},
+    {c:'立信会计师事务所',t:'审计 · 审计员',g:'审计',l:'北京/上海/深圳/杭州等',u:'https://www.bdo.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'贝恩公司 Bain',t:'助理顾问 Associate Consultant',g:'咨询',l:'上海/北京/香港',u:'https://www.bain.com/cn/offices/shanghai/careers/',s:'2026/7',d:'9月2日（大陆）'},
+    {c:'科尔尼 Kearney',t:'商业分析师 Business Analyst',g:'咨询',l:'上海/北京',u:'https://www.kearney.cn/on-campus',s:'2026/8/6',d:'9月16日'},
+    {c:'中大咨询',t:'咨询顾问',g:'咨询',l:'北京/广州/深圳/香港等16城',u:'https://www.mpgroup.cn',s:'2026/8',d:'招满即止'},
+    {c:'百度',t:'管理培训生 · 财务方向',g:'财务',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
+    {c:'百度',t:'管理培训生 · 战略方向',g:'战略/投资',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
+    {c:'百度',t:'管理培训生 · HR方向',g:'人力',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
+    {c:'京东',t:'TET管培生 · 金融方向',g:'投行/金融',l:'北京(轮岗后全国定岗)',u:'https://campus.jd.com',s:'2026/7/26',d:'招满即止'},
+    {c:'京东',t:'TET管培生 · 商务拓展方向',g:'市场/商业',l:'北京(轮岗后全国定岗)',u:'https://campus.jd.com',s:'2026/7/26',d:'招满即止'},
+    {c:'京东',t:'JDS · 财务岗',g:'财务',l:'北京/上海/深圳等40+城',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
+    {c:'京东',t:'JDS · 人力资源岗',g:'人力',l:'北京/上海/深圳等40+城',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
+    {c:'京东',t:'JDS · 金融风控岗',g:'投行/金融',l:'北京/上海/深圳等',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
+    {c:'腾讯',t:'投资分析 CDG',g:'战略/投资',l:'北京',u:'https://join.qq.com',s:'2026/7/15',d:'招满即止'},
+    {c:'阿里巴巴',t:'阿里星 · 商业/战略方向',g:'战略/投资',l:'杭州/北京/上海',u:'https://talent.alibaba.com',s:'2026/6/29',d:'招满即止'},
+    {c:'联想',t:'GFL全球未来领袖管培生',g:'管培',l:'北京',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
+    {c:'联想',t:'校园招聘 · 市场岗',g:'市场/商业',l:'北京/上海/深圳等13城',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
+    {c:'联想',t:'校园招聘 · 供应链岗',g:'供应链',l:'北京/上海/深圳等13城',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
+    {c:'宝洁 P&G',t:'财务与会计部 · 管理培训生',g:'财务',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'宝洁 P&G',t:'品牌管理部(市场) · 管理培训生',g:'市场/商业',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'宝洁 P&G',t:'客户生意发展部(销售) · 管理培训生',g:'市场/商业',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'宝洁 P&G',t:'人力资源部 · 管理培训生',g:'人力',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'宝洁 P&G',t:'供应链管理部 · 管理培训生',g:'供应链',l:'广州/上海/天津等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
+    {c:'欧莱雅',t:'管理培训生',g:'管培',l:'上海',u:'https://careers.loreal.com/zh_CN/content/Students',s:'2026/8',d:'招满即止'},
+    {c:'华泰证券',t:'财富管理',g:'投行/金融',l:'北京/上海/深圳/南京/香港',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
+    {c:'华泰证券',t:'投资管理',g:'投行/金融',l:'北京/上海/深圳/南京',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
+    {c:'华泰证券',t:'职能支持',g:'财务',l:'北京/上海/深圳/南京',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
+    {c:'中国东方资管',t:'总部管培生',g:'投行/金融',l:'北京',u:'https://www.coamc.com.cn',s:'2026/1/1',d:'9月18日'},
+    {c:'中国东方资管',t:'分公司业务岗',g:'投行/金融',l:'全国28省',u:'https://www.coamc.com.cn',s:'2026/1/1',d:'9月18日'},
+    {c:'华润置地',t:'财务岗 · 匠星计划',g:'财务',l:'全国',u:'https://career.crland.com.cn',s:'2026/6',d:'招满即止'},
+    {c:'华润置地',t:'人力资源岗 · 匠星计划',g:'人力',l:'全国',u:'https://career.crland.com.cn',s:'2026/6',d:'招满即止'}
+    // ==== DATA_END ====
+  ];
+  var UPDATED = '2026-08-12T14:45:00+08:00';
+
+  var CATS = ['全部','审计','税务','咨询','财务','管培','投行/金融','人力','市场/商业','战略/投资','供应链'];
+  var TAG = {'审计':'tg-audit','税务':'tg-tax','咨询':'tg-consult','财务':'tg-finance','管培':'tg-trainee','投行/金融':'tg-banking','人力':'tg-hr','市场/商业':'tg-mkt','战略/投资':'tg-strategy','供应链':'tg-supply'};
+  var curCat = '全部';
+
+  var $grid = document.getElementById('grid');
+  var $count = document.getElementById('count');
+  var $search = document.getElementById('search');
+  var $filters = document.getElementById('filters');
+  var $updated = document.getElementById('updated');
+
+  $updated.textContent = '最后更新：' + new Date(UPDATED).toLocaleString('zh-CN',{hour12:false});
+
+  function renderFilters(){
+    $filters.innerHTML = CATS.map(function(c){
+      return '<button class="f-chip'+(c===curCat?' on':'')+'" data-c="'+c+'">'+c+'</button>';
+    }).join('');
+    $filters.querySelectorAll('.f-chip').forEach(function(el){
+      el.addEventListener('click',function(){curCat=el.dataset.c;render();});
+    });
+  }
+
+  function render(){
+    renderFilters();
+    var q = $search.value.toLowerCase().trim();
+    var jobs = JOBS.filter(function(j){
+      if(curCat!=='全部' && j.g!==curCat) return false;
+      if(q) return (j.c+j.t+j.l).toLowerCase().indexOf(q)>=0;
+      return true;
+    });
+    $count.textContent = '共 '+jobs.length+' 个岗位';
+    $grid.innerHTML = jobs.map(function(j){
+      return '<div class="card"><div class="card__head"><div><div class="card__title">'+j.t+'</div><div class="card__company">'+j.c+'</div></div><span class="card__tag '+(TAG[j.g]||'')+'">'+j.g+'</span></div><div class="card__loc">📍 '+j.l+'</div><div class="card__ft"><a class="card__link" href="'+j.u+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl">'+j.s+' · '+j.d+'</span></div></div>';
+    }).join('');
+  }
+
+  $search.addEventListener('input', render);
+  render();
+})();
+</script>
+</body>
+</html>
