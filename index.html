@@ -3,20 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="2027届商科校招看板 · 财经/审计/税务/咨询/管培/人力/战略岗位实时汇总" />
+  <meta name="description" content="2027届商科校招看板 · AI简历匹配" />
   <title>2027届商科校招看板</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg: #f8f9fb; --card-bg: #fff; --text: #111827; --text2: #6b7280; --text3: #9ca3af; --border: #e5e7eb; --blue: #2556B6; }
+    :root { --bg: #f8f9fb; --card-bg: #fff; --text: #111827; --text2: #6b7280; --text3: #9ca3af; --border: #e5e7eb; --blue: #2556B6; --orange: #F36440; --green: #2D8A6A; }
     @media (prefers-color-scheme: dark) { :root { --bg: #0f1117; --card-bg: #1a1c24; --text: #e5e7eb; --text2: #9ca3af; --text3: #6b7280; --border: #2a2c34; } }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Sora', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
-    header { margin-bottom: 18px; }
+    header { margin-bottom: 16px; }
     header h1 { font-size: 26px; font-weight: 700; }
     header h1 span { font-weight: 200; }
+    .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 18px; }
+    .tab { padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text2); font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
     #search { flex: 1; min-width: 160px; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text); font-family: inherit; }
     #search:focus { outline: none; border-color: var(--blue); }
@@ -41,7 +47,36 @@
     .card__link:hover { text-decoration: underline; }
     .card__dl { font-size: 10px; color: var(--text3); }
     .footer { font-size: 11px; color: var(--text3); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
-    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } }
+
+    /* Resume tab styles */
+    .resume-upload { border: 2px dashed var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all .2s; background: var(--card-bg); }
+    .resume-upload:hover { border-color: var(--blue); background: rgba(37,86,182,0.03); }
+    .resume-upload.dragover { border-color: var(--blue); background: rgba(37,86,182,0.06); }
+    .resume-upload.has-file { border-style: solid; border-color: var(--green); padding: 20px; }
+    .upload-icon { font-size: 36px; margin-bottom: 10px; }
+    .upload-text { font-size: 14px; color: var(--text2); font-weight: 500; }
+    .upload-hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+    .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+    .match-card { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); padding: 18px; margin-bottom: 12px; }
+    .match-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .match-card__rank { font-size: 28px; font-weight: 700; color: var(--blue); }
+    .match-card__score { font-size: 22px; font-weight: 700; }
+    .score-high { color: var(--green); } .score-mid { color: var(--orange); }
+    .match-card__analysis { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 8px; }
+    .match-card__gap { font-size: 12px; color: var(--orange); background: rgba(243,100,64,0.08); padding: 8px 12px; border-radius: 8px; line-height: 1.5; }
+    .summary-box { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--blue); padding: 16px 18px; margin-bottom: 16px; }
+    .summary-box__title { font-size: 14px; font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+    .summary-box__text { font-size: 13px; color: var(--text2); line-height: 1.7; }
+    .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { background: rgba(243,100,64,0.1); color: var(--orange); padding: 12px 16px; border-radius: 10px; font-size: 13px; }
+    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } .tabs { gap: 0; } .tab { padding: 8px 14px; font-size: 13px; } }
   </style>
 </head>
 <body>
@@ -49,23 +84,56 @@
   <header>
     <h1>2027届 · <span>商科校招看板</span></h1>
   </header>
-  <div class="toolbar">
-    <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
-    <select id="companyFilter">
-      <option value="">🏢 全部公司</option>
-    </select>
+  <div class="tabs">
+    <button class="tab active" data-tab="board">校招看板</button>
+    <button class="tab" data-tab="resume">简历分析</button>
   </div>
-  <div class="filter-row">
-    <span class="f-label">岗位类别：</span>
-    <span id="filters"></span>
+
+  <!-- TAB 1: Job Board -->
+  <div class="tab-panel active" id="panel-board">
+    <div class="toolbar">
+      <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
+      <select id="companyFilter"><option value="">🏢 全部公司</option></select>
+    </div>
+    <div class="filter-row">
+      <span class="f-label">岗位类别：</span>
+      <span id="filters"></span>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="grid" id="grid"></div>
+    <div class="footer" id="footer"></div>
   </div>
-  <div class="count" id="count"></div>
-  <div class="grid" id="grid"></div>
-  <div class="footer" id="footer"></div>
+
+  <!-- TAB 2: Resume Analysis -->
+  <div class="tab-panel" id="panel-resume">
+    <div id="upload-zone" class="resume-upload">
+      <div class="upload-icon">📄</div>
+      <div class="upload-text">点击上传或拖拽 PDF 简历</div>
+      <div class="upload-hint">简历仅在浏览器端解析，不上传至任何服务器（匹配时仅发送纯文本）</div>
+      <input type="file" id="file-input" accept=".pdf" style="display:none" />
+    </div>
+    <div id="resume-preview" style="display:none; margin-top:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--text2);" id="file-name"></span>
+        <button class="btn btn-outline" id="clear-file" style="padding:6px 14px; font-size:12px;">重新上传</button>
+      </div>
+      <button class="btn btn-primary" id="btn-match" disabled>
+        <span id="btn-match-text">开始匹配分析</span>
+      </button>
+    </div>
+    <div id="match-loading" style="display:none;"></div>
+    <div id="match-error" style="display:none;"></div>
+    <div id="match-results" style="display:none;"></div>
+  </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
 <script>
 (function(){
+  // ==== DATA ====
   var JOBS = [
     // ==== DATA_START ====
     {c:'普华永道 PwC',t:'审计及鉴证服务 · 审计师',g:'审计',l:'北上广深/香港/成都等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
@@ -119,26 +187,20 @@
     {c:'华润置地',t:'人力资源岗 · 匠星计划',g:'人力',l:'全国',u:'https://career.crland.com.cn',s:'2026/6',d:'招满即止'}
     // ==== DATA_END ====
   ];
-  var UPDATED = '2026-08-12T18:04:00+08:00';
-
+  var UPDATED = '2026-08-12T20:15:00+08:00';
   var CATS = ['全部','审计','税务','咨询','财务','管培','投行/金融','人力','市场/商业','战略/投资','供应链'];
   var TAG = {'审计':'tg-audit','税务':'tg-tax','咨询':'tg-consult','财务':'tg-finance','管培':'tg-trainee','投行/金融':'tg-banking','人力':'tg-hr','市场/商业':'tg-mkt','战略/投资':'tg-strategy','供应链':'tg-supply'};
-  var curCat = '全部';
 
+  // ===== BOARD TAB =====
+  var curCat = '全部';
   var companies = [], seen = {};
   JOBS.forEach(function(j){ if(!seen[j.c]){ seen[j.c]=true; companies.push(j.c); } });
 
-  var $grid = document.getElementById('grid');
-  var $count = document.getElementById('count');
-  var $search = document.getElementById('search');
-  var $filters = document.getElementById('filters');
-  var $companyFilter = document.getElementById('companyFilter');
-  var $footer = document.getElementById('footer');
-
+  var $grid = document.getElementById('grid'), $count = document.getElementById('count');
+  var $search = document.getElementById('search'), $filters = document.getElementById('filters');
+  var $companyFilter = document.getElementById('companyFilter'), $footer = document.getElementById('footer');
   $footer.textContent = '最后更新：' + new Date(UPDATED).toLocaleString('zh-CN',{hour12:false});
-  $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){
-    return '<option value="'+c+'">'+c+'</option>';
-  }).join('');
+  $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
 
   function renderFilters(){
     $filters.innerHTML = CATS.map(function(c){
@@ -151,8 +213,7 @@
 
   function render(){
     renderFilters();
-    var q = $search.value.toLowerCase().trim();
-    var cc = $companyFilter.value;
+    var q = $search.value.toLowerCase().trim(), cc = $companyFilter.value;
     var jobs = JOBS.filter(function(j){
       if(curCat!=='全部' && j.g!==curCat) return false;
       if(cc && j.c!==cc) return false;
@@ -164,10 +225,115 @@
       return '<div class="card"><div class="card__head"><div><div class="card__title">'+j.t+'</div><div class="card__company">'+j.c+'</div></div><span class="card__tag '+(TAG[j.g]||'')+'">'+j.g+'</span></div><div class="card__loc">📍 '+j.l+'</div><div class="card__ft"><a class="card__link" href="'+j.u+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl">'+j.s+' · '+j.d+'</span></div></div>';
     }).join('');
   }
-
   $search.addEventListener('input', render);
   $companyFilter.addEventListener('change', render);
   render();
+
+  // ===== TAB SWITCHING =====
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(x){ x.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ===== RESUME TAB =====
+  var resumeText = '';
+  var uploadZone = document.getElementById('upload-zone');
+  var fileInput = document.getElementById('file-input');
+  var resumePreview = document.getElementById('resume-preview');
+  var fileNameEl = document.getElementById('file-name');
+  var clearBtn = document.getElementById('clear-file');
+  var btnMatch = document.getElementById('btn-match');
+  var btnMatchText = document.getElementById('btn-match-text');
+  var matchLoading = document.getElementById('match-loading');
+  var matchError = document.getElementById('match-error');
+  var matchResults = document.getElementById('match-results');
+
+  uploadZone.addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', function(e){ if(e.target.files[0]) processFile(e.target.files[0]); });
+
+  uploadZone.addEventListener('dragover', function(e){ e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', function(){ uploadZone.classList.remove('dragover'); });
+  uploadZone.addEventListener('drop', function(e){ e.preventDefault(); uploadZone.classList.remove('dragover'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+
+  clearBtn.addEventListener('click', function(){ resumeText=''; fileInput.value=''; resumePreview.style.display='none'; uploadZone.style.display='block'; uploadZone.classList.remove('has-file'); matchResults.style.display='none'; matchError.style.display='none'; btnMatch.disabled=true; });
+
+  btnMatch.addEventListener('click', runMatch);
+
+  async function processFile(file){
+    if(file.type!=='application/pdf'){ alert('请上传 PDF 文件'); return; }
+    try {
+      uploadZone.classList.add('has-file');
+      var arrayBuffer = await file.arrayBuffer();
+      var pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+      var texts = [];
+      for(var i=1;i<=pdf.numPages;i++){
+        var page = await pdf.getPage(i);
+        var content = await page.getTextContent();
+        texts.push(content.items.map(function(item){ return item.str; }).join(' '));
+      }
+      resumeText = texts.join('\n').trim();
+      if(!resumeText){ alert('无法解析简历文本，请确保 PDF 不是扫描图片版'); return; }
+      uploadZone.style.display='none';
+      resumePreview.style.display='block';
+      fileNameEl.textContent = file.name+' ('+(resumeText.length)+' 字符)';
+      btnMatch.disabled=false;
+      btnMatchText.textContent='开始匹配分析';
+      matchResults.style.display='none';
+      matchError.style.display='none';
+    } catch(e){
+      alert('解析失败：'+e.message);
+    }
+  }
+
+  async function runMatch(){
+    btnMatch.disabled=true;
+    btnMatchText.textContent='分析中…';
+    matchLoading.style.display='block';
+    matchLoading.innerHTML = '<div class="loading"><div class="spinner"></div><div style="font-size:13px;color:var(--text2);">DeepSeek 正在分析你的简历与 '+JOBS.length+' 个岗位…</div></div>';
+    matchError.style.display='none';
+    matchResults.style.display='none';
+
+    try {
+      var r = await fetch('/api/match', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ resume: resumeText, jobs: JOBS.map(function(j,i){ return {c:j.c,t:j.t,g:j.g,l:j.l,u:j.u,s:j.s,d:j.d,idx:i}; }) })
+      });
+      var data = await r.json();
+      if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
+
+      matchLoading.style.display='none';
+      var h = '';
+      if(data.summary) h += '<div class="summary-box"><div class="summary-box__title">📊 综合评估</div><div class="summary-box__text">'+data.summary+'</div></div>';
+
+      (data.matches||[]).forEach(function(m,i){
+        var job = m.job||{};
+        var sc = m.score||0;
+        var scCls = sc>=8?'score-high':(sc>=6?'score-mid':'');
+        h += '<div class="match-card">'+
+          '<div class="match-card__header">'+
+            '<div><span class="match-card__rank">#'+(i+1)+'</span> <span style="font-size:15px;font-weight:600;">'+job.t+'</span><div style="font-size:11px;color:var(--text3);margin-top:3px;">'+job.c+' · '+job.l+'</div></div>'+
+            '<span class="match-card__score '+scCls+'">'+sc+'/10</span>'+
+          '</div>'+
+          '<div class="match-card__analysis">'+(m.analysis||'')+'</div>'+
+          (m.gap?'<div class="match-card__gap">💡 '+(m.gap||'')+'</div>':'')+
+          '<div style="margin-top:8px;"><a class="card__link" href="'+(job.u||'#')+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl" style="margin-left:12px;">'+job.s+' · '+job.d+'</span></div>'+
+        '</div>';
+      });
+      matchResults.innerHTML = h;
+      matchResults.style.display='block';
+    } catch(e){
+      matchLoading.style.display='none';
+      matchError.style.display='block';
+      matchError.innerHTML = '<div class="error-msg">❌ '+e.message+'</div>';
+    }
+    btnMatch.disabled=false;
+    btnMatchText.textContent='重新匹配分析';
+  }
 })();
 </script>
 </body>
