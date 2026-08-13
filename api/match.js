@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     `[${i}] ${j.company} — ${j.title} | 类型:${j.category} | 地点:${j.location} | 网申:${j.start} | 截止:${j.deadline}`
   ).join('\n');
 
-  const prompt = `你是一位资深校招职业规划顾问。请根据以下简历内容，从岗位列表中选出 Top 5 最适合该候选人的岗位并分析。
+  const prompt = `你是一位资深校招职业规划顾问。请根据以下简历内容，从岗位列表中选出 Top 8 最适合该候选人的岗位并分析。
 
 ## 岗位列表（共${jobs.length}个）：
 ${jobsText}
@@ -25,13 +25,14 @@ ${jobsText}
 ${resume}
 
 ## 要求：
-1. 从岗位列表中严格挑选 5 个最匹配的岗位（不能编造不存在的岗位）
-2. 每个推荐包含：
+1. 从岗位列表中严格挑选 8 个最匹配的岗位（不能编造不存在的岗位）
+2. 这 8 个岗位必须尽可能覆盖不同的岗位类别（类型字段），避免集中在同一类岗位（例如不要全是审计）
+3. 每个推荐包含：
    - 岗位编号（列表中的 [N]）
    - 匹配度评分（1-10）
    - 匹配分析（3-4句话：为什么匹配、优势在哪、需要注意什么）
    - 差距建议（如果存在差距，1-2句具体建议）
-3. 输出严格 JSON 格式，不要 Markdown 代码块标记：
+4. 输出严格 JSON 格式，不要 Markdown 代码块标记：
 
 {"matches":[{"id":编号,"score":分数,"analysis":"分析","gap":"建议"},...],"summary":"总体评价(2-3句)"}`;
 
@@ -60,11 +61,20 @@ ${resume}
     const content = data.choices?.[0]?.message?.content;
     const result = JSON.parse(content);
 
-    // map indices back to actual job objects
-    result.matches = result.matches.map(m => ({
-      ...m,
-      job: jobs[m.id] || null
-    }));
+    // map indices back to actual job objects, then dedupe by category
+    const seen = new Set();
+    const deduped = [];
+    for (const m of (result.matches || [])) {
+      const job = jobs[m.id];
+      if (!job) continue;
+      if (seen.has(job.category)) continue; // 同类岗位只保留第一个（最高分）
+      seen.add(job.category);
+      deduped.push({ ...m, job });
+    }
+
+    // 按 score 降序排列，取前 5 个（类别互不相同）
+    deduped.sort((a, b) => (b.score || 0) - (a.score || 0));
+    result.matches = deduped.slice(0, 5);
 
     return res.status(200).json(result);
   } catch (e) {
