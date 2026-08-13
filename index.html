@@ -48,7 +48,6 @@
     .card__dl { font-size: 10px; color: var(--text3); }
     .footer { font-size: 11px; color: var(--text3); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
 
-    /* Resume tab styles */
     .resume-upload { border: 2px dashed var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all .2s; background: var(--card-bg); }
     .resume-upload:hover { border-color: var(--blue); background: rgba(37,86,182,0.03); }
     .resume-upload.dragover { border-color: var(--blue); background: rgba(37,86,182,0.06); }
@@ -76,7 +75,7 @@
     .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error-msg { background: rgba(243,100,64,0.1); color: var(--orange); padding: 12px 16px; border-radius: 10px; font-size: 13px; }
-    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } .tabs { gap: 0; } .tab { padding: 8px 14px; font-size: 13px; } }
+    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } .tab { padding: 8px 14px; font-size: 13px; } }
   </style>
 </head>
 <body>
@@ -89,7 +88,6 @@
     <button class="tab" data-tab="resume">简历分析</button>
   </div>
 
-  <!-- TAB 1: Job Board -->
   <div class="tab-panel active" id="panel-board">
     <div class="toolbar">
       <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
@@ -104,7 +102,6 @@
     <div class="footer" id="footer"></div>
   </div>
 
-  <!-- TAB 2: Resume Analysis -->
   <div class="tab-panel" id="panel-resume">
     <div id="upload-zone" class="resume-upload">
       <div class="upload-icon">📄</div>
@@ -133,74 +130,41 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 </script>
 <script>
 (function(){
-  // ==== DATA ====
-  var JOBS = [
-    // ==== DATA_START ====
-    {c:'普华永道 PwC',t:'审计及鉴证服务 · 审计师',g:'审计',l:'北上广深/香港/成都等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
-    {c:'普华永道 PwC',t:'税务及商务咨询 · 顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
-    {c:'普华永道 PwC',t:'管理咨询 · 顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
-    {c:'普华永道 PwC',t:'交易服务 Edge · 交易顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
-    {c:'普华永道 PwC',t:'风险及控制 · 风控顾问',g:'审计',l:'北上广深/香港等全国',u:'https://www.pwccn.com/zh/careers/students.html',s:'2026/8/3',d:'招满即止'},
-    {c:'德勤 Deloitte',t:'审计及鉴证 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
-    {c:'德勤 Deloitte',t:'税务与商务咨询 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
-    {c:'德勤 Deloitte',t:'管理咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
-    {c:'德勤 Deloitte',t:'财务咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.deloitte.com/cn/zh/careers/explore-your-fit/students/graduate-program.html',s:'2026/8',d:'招满即止'},
-    {c:'安永 EY',t:'审计 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
-    {c:'安永 EY',t:'税务 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
-    {c:'安永 EY',t:'咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
-    {c:'安永 EY',t:'战略与交易咨询 · 顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://www.ey.com/zh_cn/careers/student-programs-in-chinese-mainland',s:'2026/8',d:'招满即止'},
-    {c:'毕马威 KPMG',t:'审计 · 审计师',g:'审计',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
-    {c:'毕马威 KPMG',t:'税务 · 税务顾问',g:'税务',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
-    {c:'毕马威 KPMG',t:'咨询 · 咨询顾问',g:'咨询',l:'北上广深/香港等全国',u:'https://kpmg.com/cn/zh/careers/campus.html',s:'2026/8',d:'持续滚动'},
-    {c:'天健会计师事务所',t:'财务审计 · 审计员',g:'审计',l:'杭州/北京/上海/深圳等',u:'https://zhaopin.pccpa.cn/hr/recruit/school',s:'2026/7',d:'招满即止'},
-    {c:'信永中和',t:'审计 · 审计助理',g:'审计',l:'全国',u:'https://job.shinewing.com/job/campus',s:'2026/8',d:'招满即止'},
-    {c:'信永中和',t:'税务 · 税务助理',g:'税务',l:'全国',u:'https://job.shinewing.com/job/campus',s:'2026/8',d:'招满即止'},
-    {c:'立信会计师事务所',t:'审计 · 审计员',g:'审计',l:'北京/上海/深圳/杭州等',u:'https://www.bdo.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'贝恩公司 Bain',t:'助理顾问 Associate Consultant',g:'咨询',l:'上海/北京/香港',u:'https://www.bain.com/cn/offices/shanghai/careers/',s:'2026/7',d:'9月2日（大陆）'},
-    {c:'科尔尼 Kearney',t:'商业分析师 Business Analyst',g:'咨询',l:'上海/北京',u:'https://www.kearney.cn/on-campus',s:'2026/8/6',d:'9月16日'},
-    {c:'中大咨询',t:'咨询顾问',g:'咨询',l:'北京/广州/深圳/香港等16城',u:'https://www.mpgroup.cn',s:'2026/8',d:'招满即止'},
-    {c:'百度',t:'管理培训生 · 财务方向',g:'财务',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
-    {c:'百度',t:'管理培训生 · 战略方向',g:'战略/投资',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
-    {c:'百度',t:'管理培训生 · HR方向',g:'人力',l:'北京',u:'https://talent.baidu.com',s:'2026/7/3',d:'8月14日'},
-    {c:'京东',t:'TET管培生 · 金融方向',g:'投行/金融',l:'北京(轮岗后全国定岗)',u:'https://campus.jd.com',s:'2026/7/26',d:'招满即止'},
-    {c:'京东',t:'TET管培生 · 商务拓展方向',g:'市场/商业',l:'北京(轮岗后全国定岗)',u:'https://campus.jd.com',s:'2026/7/26',d:'招满即止'},
-    {c:'京东',t:'JDS · 财务岗',g:'财务',l:'北京/上海/深圳等40+城',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
-    {c:'京东',t:'JDS · 人力资源岗',g:'人力',l:'北京/上海/深圳等40+城',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
-    {c:'京东',t:'JDS · 金融风控岗',g:'投行/金融',l:'北京/上海/深圳等',u:'https://campus.jd.com',s:'2026/8/3',d:'招满即止'},
-    {c:'腾讯',t:'投资分析 CDG',g:'战略/投资',l:'北京',u:'https://join.qq.com',s:'2026/7/15',d:'招满即止'},
-    {c:'阿里巴巴',t:'阿里星 · 商业/战略方向',g:'战略/投资',l:'杭州/北京/上海',u:'https://talent.alibaba.com',s:'2026/6/29',d:'招满即止'},
-    {c:'联想',t:'GFL全球未来领袖管培生',g:'管培',l:'北京',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
-    {c:'联想',t:'校园招聘 · 市场岗',g:'市场/商业',l:'北京/上海/深圳等13城',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
-    {c:'联想',t:'校园招聘 · 供应链岗',g:'供应链',l:'北京/上海/深圳等13城',u:'https://talent.lenovo.com.cn/campus',s:'2026/8/5',d:'10月30日'},
-    {c:'宝洁 P&G',t:'财务与会计部 · 管理培训生',g:'财务',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'宝洁 P&G',t:'品牌管理部(市场) · 管理培训生',g:'市场/商业',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'宝洁 P&G',t:'客户生意发展部(销售) · 管理培训生',g:'市场/商业',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'宝洁 P&G',t:'人力资源部 · 管理培训生',g:'人力',l:'广州/上海/北京等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'宝洁 P&G',t:'供应链管理部 · 管理培训生',g:'供应链',l:'广州/上海/天津等',u:'https://careers.pg.com.cn',s:'2026/8',d:'招满即止'},
-    {c:'欧莱雅',t:'管理培训生',g:'管培',l:'上海',u:'https://careers.loreal.com/zh_CN/content/Students',s:'2026/8',d:'招满即止'},
-    {c:'华泰证券',t:'财富管理',g:'投行/金融',l:'北京/上海/深圳/南京/香港',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
-    {c:'华泰证券',t:'投资管理',g:'投行/金融',l:'北京/上海/深圳/南京',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
-    {c:'华泰证券',t:'职能支持',g:'财务',l:'北京/上海/深圳/南京',u:'https://wecruit.hotjob.cn/SU6013d14e5d83dc11e4a8ae4d/pb/index.html',s:'2026/3/31',d:'5月10日(提前批已截止)'},
-    {c:'中国东方资管',t:'总部管培生',g:'投行/金融',l:'北京',u:'https://www.coamc.com.cn',s:'2026/1/1',d:'9月18日'},
-    {c:'中国东方资管',t:'分公司业务岗',g:'投行/金融',l:'全国28省',u:'https://www.coamc.com.cn',s:'2026/1/1',d:'9月18日'},
-    {c:'华润置地',t:'财务岗 · 匠星计划',g:'财务',l:'全国',u:'https://career.crland.com.cn',s:'2026/6',d:'招满即止'},
-    {c:'华润置地',t:'人力资源岗 · 匠星计划',g:'人力',l:'全国',u:'https://career.crland.com.cn',s:'2026/6',d:'招满即止'}
-    // ==== DATA_END ====
-  ];
-  var UPDATED = '2026-08-12T20:15:00+08:00';
+  var JOBS = [];
+  var UPDATED = '';
   var CATS = ['全部','审计','税务','咨询','财务','管培','投行/金融','人力','市场/商业','战略/投资','供应链'];
   var TAG = {'审计':'tg-audit','税务':'tg-tax','咨询':'tg-consult','财务':'tg-finance','管培':'tg-trainee','投行/金融':'tg-banking','人力':'tg-hr','市场/商业':'tg-mkt','战略/投资':'tg-strategy','供应链':'tg-supply'};
 
-  // ===== BOARD TAB =====
   var curCat = '全部';
-  var companies = [], seen = {};
-  JOBS.forEach(function(j){ if(!seen[j.c]){ seen[j.c]=true; companies.push(j.c); } });
-
   var $grid = document.getElementById('grid'), $count = document.getElementById('count');
   var $search = document.getElementById('search'), $filters = document.getElementById('filters');
   var $companyFilter = document.getElementById('companyFilter'), $footer = document.getElementById('footer');
-  $footer.textContent = '最后更新：' + new Date(UPDATED).toLocaleString('zh-CN',{hour12:false});
-  $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+
+  // ===== 数据加载 =====
+  fetch('./data.json')
+    .then(function(r){ if(!r.ok) throw new Error('data.json load failed: '+r.status); return r.json(); })
+    .then(function(data){
+      JOBS = data.jobs || [];
+      UPDATED = data.updated || '';
+      init();
+    })
+    .catch(function(e){
+      document.getElementById('grid').innerHTML = '<div class="error-msg">数据加载失败：'+e.message+'</div>';
+    });
+
+  function init(){
+    $footer.textContent = '最后更新：' + (UPDATED ? new Date(UPDATED).toLocaleString('zh-CN',{hour12:false}) : '—');
+
+    // populate company dropdown
+    var companies = [], seen = {};
+    JOBS.forEach(function(j){ if(!seen[j.company]){ seen[j.company]=true; companies.push(j.company); } });
+    $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+
+    renderFilters();
+    render();
+    $search.addEventListener('input', render);
+    $companyFilter.addEventListener('change', render);
+  }
 
   function renderFilters(){
     $filters.innerHTML = CATS.map(function(c){
@@ -215,19 +179,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
     renderFilters();
     var q = $search.value.toLowerCase().trim(), cc = $companyFilter.value;
     var jobs = JOBS.filter(function(j){
-      if(curCat!=='全部' && j.g!==curCat) return false;
-      if(cc && j.c!==cc) return false;
-      if(q) return (j.c+j.t+j.l).toLowerCase().indexOf(q)>=0;
+      if(curCat!=='全部' && j.category!==curCat) return false;
+      if(cc && j.company!==cc) return false;
+      if(q) return (j.company+j.title+j.location).toLowerCase().indexOf(q)>=0;
       return true;
     });
     $count.textContent = '共 '+jobs.length+' 个岗位';
     $grid.innerHTML = jobs.map(function(j){
-      return '<div class="card"><div class="card__head"><div><div class="card__title">'+j.t+'</div><div class="card__company">'+j.c+'</div></div><span class="card__tag '+(TAG[j.g]||'')+'">'+j.g+'</span></div><div class="card__loc">📍 '+j.l+'</div><div class="card__ft"><a class="card__link" href="'+j.u+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl">'+j.s+' · '+j.d+'</span></div></div>';
+      return '<div class="card"><div class="card__head"><div><div class="card__title">'+j.title+'</div><div class="card__company">'+j.company+'</div></div><span class="card__tag '+(TAG[j.category]||'')+'">'+j.category+'</span></div><div class="card__loc">📍 '+j.location+'</div><div class="card__ft"><a class="card__link" href="'+j.url+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl">'+j.start+' · '+j.deadline+'</span></div></div>';
     }).join('');
   }
-  $search.addEventListener('input', render);
-  $companyFilter.addEventListener('change', render);
-  render();
 
   // ===== TAB SWITCHING =====
   document.querySelectorAll('.tab').forEach(function(t){
@@ -254,13 +215,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
   uploadZone.addEventListener('click', function(){ fileInput.click(); });
   fileInput.addEventListener('change', function(e){ if(e.target.files[0]) processFile(e.target.files[0]); });
-
   uploadZone.addEventListener('dragover', function(e){ e.preventDefault(); uploadZone.classList.add('dragover'); });
   uploadZone.addEventListener('dragleave', function(){ uploadZone.classList.remove('dragover'); });
   uploadZone.addEventListener('drop', function(e){ e.preventDefault(); uploadZone.classList.remove('dragover'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
-
   clearBtn.addEventListener('click', function(){ resumeText=''; fileInput.value=''; resumePreview.style.display='none'; uploadZone.style.display='block'; uploadZone.classList.remove('has-file'); matchResults.style.display='none'; matchError.style.display='none'; btnMatch.disabled=true; });
-
   btnMatch.addEventListener('click', runMatch);
 
   async function processFile(file){
@@ -279,14 +237,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
       if(!resumeText){ alert('无法解析简历文本，请确保 PDF 不是扫描图片版'); return; }
       uploadZone.style.display='none';
       resumePreview.style.display='block';
-      fileNameEl.textContent = file.name+' ('+(resumeText.length)+' 字符)';
+      fileNameEl.textContent = file.name+' ('+resumeText.length+' 字符)';
       btnMatch.disabled=false;
       btnMatchText.textContent='开始匹配分析';
       matchResults.style.display='none';
       matchError.style.display='none';
-    } catch(e){
-      alert('解析失败：'+e.message);
-    }
+    } catch(e){ alert('解析失败：'+e.message); }
   }
 
   async function runMatch(){
@@ -301,7 +257,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
       var r = await fetch('/api/match', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ resume: resumeText, jobs: JOBS.map(function(j,i){ return {c:j.c,t:j.t,g:j.g,l:j.l,u:j.u,s:j.s,d:j.d,idx:i}; }) })
+        body: JSON.stringify({ resume: resumeText, jobs: JOBS.map(function(j,i){ return {company:j.company, title:j.title, category:j.category, location:j.location, url:j.url, start:j.start, deadline:j.deadline, idx:i}; }) })
       });
       var data = await r.json();
       if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
@@ -316,12 +272,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
         var scCls = sc>=8?'score-high':(sc>=6?'score-mid':'');
         h += '<div class="match-card">'+
           '<div class="match-card__header">'+
-            '<div><span class="match-card__rank">#'+(i+1)+'</span> <span style="font-size:15px;font-weight:600;">'+job.t+'</span><div style="font-size:11px;color:var(--text3);margin-top:3px;">'+job.c+' · '+job.l+'</div></div>'+
+            '<div><span class="match-card__rank">#'+(i+1)+'</span> <span style="font-size:15px;font-weight:600;">'+job.title+'</span><div style="font-size:11px;color:var(--text3);margin-top:3px;">'+job.company+' · '+job.location+'</div></div>'+
             '<span class="match-card__score '+scCls+'">'+sc+'/10</span>'+
           '</div>'+
           '<div class="match-card__analysis">'+(m.analysis||'')+'</div>'+
           (m.gap?'<div class="match-card__gap">💡 '+(m.gap||'')+'</div>':'')+
-          '<div style="margin-top:8px;"><a class="card__link" href="'+(job.u||'#')+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl" style="margin-left:12px;">'+job.s+' · '+job.d+'</span></div>'+
+          '<div style="margin-top:8px;"><a class="card__link" href="'+(job.url||'#')+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl" style="margin-left:12px;">'+job.start+' · '+job.deadline+'</span></div>'+
         '</div>';
       });
       matchResults.innerHTML = h;

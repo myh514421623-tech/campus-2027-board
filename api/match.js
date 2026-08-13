@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
   const jobsText = jobs.map((j, i) =>
-    `[${i}] ${j.c} — ${j.t} | 类型:${j.g} | 地点:${j.l} | 网申:${j.s} | 截止:${j.d}`
+    `[${i}] ${j.company} — ${j.title} | 类型:${j.category} | 地点:${j.location} | 网申:${j.start} | 截止:${j.deadline}`
   ).join('\n');
 
   const prompt = `你是一位资深校招职业规划顾问。请根据以下简历内容，从岗位列表中选出 Top 5 最适合该候选人的岗位并分析。
