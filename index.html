@@ -124,6 +124,7 @@
   </div>
 </div>
 
+<script src="data.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -140,17 +141,17 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
   var $search = document.getElementById('search'), $filters = document.getElementById('filters');
   var $companyFilter = document.getElementById('companyFilter'), $footer = document.getElementById('footer');
 
-  // ===== 数据加载 =====
-  fetch('./data.json')
-    .then(function(r){ if(!r.ok) throw new Error('data.json load failed: '+r.status); return r.json(); })
-    .then(function(data){
-      JOBS = data.jobs || [];
-      UPDATED = data.updated || '';
-      init();
-    })
-    .catch(function(e){
-      document.getElementById('grid').innerHTML = '<div class="error-msg">数据加载失败：'+e.message+'</div>';
-    });
+  // ===== 数据加载（window.CAMPUS_JOBS 由 data.js 提供，兼容 file:// 本地打开）=====
+  (function loadData(){
+    var data = window.CAMPUS_JOBS || {};
+    JOBS = data.jobs || [];
+    UPDATED = data.updated || '';
+    if (!JOBS.length) {
+      document.getElementById('grid').innerHTML = '<div class="error-msg">数据加载失败：找不到 data.js</div>';
+      return;
+    }
+    init();
+  })();
 
   function init(){
     $footer.textContent = '最后更新：' + (UPDATED ? new Date(UPDATED).toLocaleString('zh-CN',{hour12:false}) : '—');
@@ -285,7 +286,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
     } catch(e){
       matchLoading.style.display='none';
       matchError.style.display='block';
-      matchError.innerHTML = '<div class="error-msg">❌ '+e.message+'</div>';
+      var isLocal = window.location.protocol === 'file:';
+      matchError.innerHTML = isLocal
+        ? '<div class="error-msg">⚠️ 本地预览模式不支持 AI 简历匹配（依赖 EdgeOne 边缘函数后端）。请部署到 EdgeOne 后使用，或本地起服务器并配置后端。</div>'
+        : '<div class="error-msg">❌ '+e.message+'</div>';
     }
     btnMatch.disabled=false;
     btnMatchText.textContent='重新匹配分析';
