@@ -25,7 +25,7 @@ export default async function onRequestPost(context) {
     if (!apiKey) return json({ error: 'API key not configured' }, 500);
 
     const jobsText = jobs
-      .map((j, i) => `[${i}] ${j.company} — ${j.title} | 类型:${j.category} | 地点:${j.location} | 网申:${j.start} | 截止:${j.deadline}`)
+      .map((j, i) => `[${i}] ${j.company} — ${j.title} | 类型:${j.major} | 地点:${j.location} | 网申:${j.start} | 截止:${j.deadline}`)
       .join('\n');
 
     const prompt = `你是一位资深校招职业规划顾问。请根据以下简历内容，从岗位列表中选出 Top 8 最适合该候选人的岗位并分析。
@@ -72,14 +72,14 @@ ${resume}
     const content = data.choices?.[0]?.message?.content;
     const result = JSON.parse(content);
 
-    // 按类别去重，同类岗位只保留最高分；再按分数降序取前 5（类别互不相同）
+    // 按大类去重，同类岗位只保留最高分；再按分数降序取前 5（大类互不相同）
     const seen = new Set();
     const deduped = [];
     for (const m of result.matches || []) {
       const job = jobs[m.id];
       if (!job) continue;
-      if (seen.has(job.category)) continue;
-      seen.add(job.category);
+      if (seen.has(job.major)) continue;
+      seen.add(job.major);
       deduped.push({ ...m, job });
     }
     deduped.sort((a, b) => (b.score || 0) - (a.score || 0));

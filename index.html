@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
   <style>
     :root { --bg: #f8f9fb; --card-bg: #fff; --text: #111827; --text2: #6b7280; --text3: #9ca3af; --border: #e5e7eb; --blue: #2556B6; --orange: #F36440; --green: #2D8A6A; }
     @media (prefers-color-scheme: dark) { :root { --bg: #0f1117; --card-bg: #1a1c24; --text: #e5e7eb; --text2: #9ca3af; --text3: #6b7280; --border: #2a2c34; } }
@@ -23,15 +24,31 @@
     .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
+    /* 大类卡片视图 */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    .cat-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 20px; cursor: pointer; transition: all .18s; display: flex; flex-direction: column; gap: 10px; }
+    .cat-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(37,86,182,0.08); }
+    .cat-card__top { display: flex; align-items: center; justify-content: space-between; }
+    .cat-card__icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .cat-card__count { font-size: 11px; font-weight: 600; color: var(--text3); }
+    .cat-card__name { font-size: 15px; font-weight: 600; }
+    .cat-card__examples { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+    .cat-card__ex { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 6px; line-height: 1.4; }
+    .cat-card__ex i { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+    .cat-card__arrow { margin-top: auto; text-align: right; font-size: 12px; color: var(--blue); font-weight: 500; }
+
+    /* 岗位列表视图 */
+    .back-row { margin-bottom: 12px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text2); font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .back-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .jobs-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .jobs-title i { font-size: 20px; color: var(--blue); }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
     #search { flex: 1; min-width: 160px; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text); font-family: inherit; }
     #search:focus { outline: none; border-color: var(--blue); }
     #companyFilter { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 12px; background: var(--card-bg); color: var(--text); font-family: inherit; cursor: pointer; min-width: 140px; }
     #companyFilter:focus { outline: none; border-color: var(--blue); }
-    .filter-row { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-    .f-label { font-size: 12px; color: var(--text3); font-weight: 500; margin-right: 2px; }
-    .f-chip { padding: 5px 12px; border-radius: 16px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--card-bg); color: var(--text2); cursor: pointer; font-family: inherit; transition: all .15s; }
-    .f-chip:hover, .f-chip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
     .count { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
     .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; transition: border-color .15s; }
@@ -40,14 +57,17 @@
     .card__title { font-size: 13px; font-weight: 600; line-height: 1.35; }
     .card__company { font-size: 11px; color: var(--text3); margin-top: 2px; }
     .card__tag { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-    .tg-audit{background:#EBF0FF;color:#2556B6}.tg-tax{background:#FFF0E6;color:#E07B3C}.tg-consult{background:#E8F4F0;color:#2D8A6A}.tg-finance{background:#F0E8FF;color:#6B3FA0}.tg-trainee{background:#FFF4D9;color:#B8860B}.tg-banking{background:#E6F0FA;color:#1A6094}.tg-hr{background:#FFE8F0;color:#C73E6F}.tg-mkt{background:#E0F2FE;color:#0C6B9E}.tg-strategy{background:#FEE8E5;color:#A84330}.tg-supply{background:#ECF5E8;color:#4A8230}
     .card__loc { font-size: 11px; color: var(--text2); }
     .card__ft { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
     .card__link { font-size: 11px; color: var(--blue); text-decoration: none; font-weight: 500; }
     .card__link:hover { text-decoration: underline; }
     .card__dl { font-size: 10px; color: var(--text3); }
+    .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+    .empty i { font-size: 40px; opacity: 0.4; display: block; margin-bottom: 10px; }
+    .empty__text { font-size: 13px; }
     .footer { font-size: 11px; color: var(--text3); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
 
+    /* 简历分析 */
     .resume-upload { border: 2px dashed var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all .2s; background: var(--card-bg); }
     .resume-upload:hover { border-color: var(--blue); background: rgba(37,86,182,0.03); }
     .resume-upload.dragover { border-color: var(--blue); background: rgba(37,86,182,0.06); }
@@ -75,7 +95,7 @@
     .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error-msg { background: rgba(243,100,64,0.1); color: var(--orange); padding: 12px 16px; border-radius: 10px; font-size: 13px; }
-    @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } .tab { padding: 8px 14px; font-size: 13px; } }
+    @media (max-width: 420px) { .cat-grid, .grid { grid-template-columns: 1fr; } header h1 { font-size: 21px; } .tab { padding: 8px 14px; font-size: 13px; } }
   </style>
 </head>
 <body>
@@ -89,16 +109,23 @@
   </div>
 
   <div class="tab-panel active" id="panel-board">
-    <div class="toolbar">
-      <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
-      <select id="companyFilter"><option value="">🏢 全部公司</option></select>
+    <!-- 大类卡片视图（默认） -->
+    <div id="category-view">
+      <div class="cat-grid" id="catGrid"></div>
     </div>
-    <div class="filter-row">
-      <span class="f-label">岗位类别：</span>
-      <span id="filters"></span>
+
+    <!-- 岗位列表视图 -->
+    <div id="jobs-view" style="display:none;">
+      <div class="back-row"><button class="back-btn" id="backBtn"><i class="ph ph-arrow-left"></i> 返回全部大类</button></div>
+      <div class="jobs-title" id="jobsTitle"></div>
+      <div class="toolbar">
+        <input id="search" type="text" placeholder="搜索公司、岗位或城市…" />
+        <select id="companyFilter"><option value="">🏢 全部公司</option></select>
+      </div>
+      <div class="count" id="count"></div>
+      <div class="grid" id="grid"></div>
     </div>
-    <div class="count" id="count"></div>
-    <div class="grid" id="grid"></div>
+
     <div class="footer" id="footer"></div>
   </div>
 
@@ -131,64 +158,134 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 </script>
 <script>
 (function(){
-  var JOBS = [];
-  var UPDATED = '';
-  var CATS = ['全部','审计','税务','咨询','财务','管培','投行/金融','人力','市场/商业','战略/投资','供应链'];
-  var TAG = {'审计':'tg-audit','税务':'tg-tax','咨询':'tg-consult','财务':'tg-finance','管培':'tg-trainee','投行/金融':'tg-banking','人力':'tg-hr','市场/商业':'tg-mkt','战略/投资':'tg-strategy','供应链':'tg-supply'};
+  var DATA = window.CAMPUS_DATA || {};
+  var JOBS = DATA.jobs || [];
+  var CATEGORIES = DATA.categories || [];
+  var UPDATED = DATA.updated || '';
 
-  var curCat = '全部';
-  var $grid = document.getElementById('grid'), $count = document.getElementById('count');
-  var $search = document.getElementById('search'), $filters = document.getElementById('filters');
-  var $companyFilter = document.getElementById('companyFilter'), $footer = document.getElementById('footer');
+  var MAJOR_COLORS = {
+    '财务会计类': {bg:'#EBF0FF', fg:'#2556B6'},
+    '金融类': {bg:'#FFF4D9', fg:'#B8860B'},
+    '咨询类': {bg:'#E8F4F0', fg:'#2D8A6A'},
+    '市场营销类': {bg:'#FFF0E6', fg:'#E07B3C'},
+    '商业分析类': {bg:'#E0F2FE', fg:'#0C6B9E'},
+    '战略类': {bg:'#FEE8E5', fg:'#A84330'},
+    '产品类': {bg:'#F0E8FF', fg:'#6B3FA0'},
+    '运营类': {bg:'#E6F0FA', fg:'#1A6094'},
+    '人力资源类': {bg:'#FFE8F0', fg:'#C73E6F'},
+    '供应链管理类': {bg:'#ECF5E8', fg:'#4A8230'},
+    '综合管培生类': {bg:'#E8E6FF', fg:'#4338CA'},
+    '审计与税务类': {bg:'#DDE6F5', fg:'#1E40AF'}
+  };
+  var ICON_BG = {
+    '财务会计类': '#EBF0FF', '金融类': '#FFF4D9', '咨询类': '#E8F4F0', '市场营销类': '#FFF0E6',
+    '商业分析类': '#E0F2FE', '战略类': '#FEE8E5', '产品类': '#F0E8FF', '运营类': '#E6F0FA',
+    '人力资源类': '#FFE8F0', '供应链管理类': '#ECF5E8', '综合管培生类': '#E8E6FF', '审计与税务类': '#DDE6F5'
+  };
 
-  // ===== 数据加载（window.CAMPUS_JOBS 由 data.js 提供，兼容 file:// 本地打开）=====
-  (function loadData(){
-    var data = window.CAMPUS_JOBS || {};
-    JOBS = data.jobs || [];
-    UPDATED = data.updated || '';
-    if (!JOBS.length) {
-      document.getElementById('grid').innerHTML = '<div class="error-msg">数据加载失败：找不到 data.js</div>';
-      return;
-    }
-    init();
-  })();
+  var curMajor = null;
+  var $catGrid = document.getElementById('catGrid');
+  var $catView = document.getElementById('category-view');
+  var $jobsView = document.getElementById('jobs-view');
+  var $jobsTitle = document.getElementById('jobsTitle');
+  var $grid = document.getElementById('grid');
+  var $count = document.getElementById('count');
+  var $search = document.getElementById('search');
+  var $companyFilter = document.getElementById('companyFilter');
+  var $footer = document.getElementById('footer');
+  var $backBtn = document.getElementById('backBtn');
 
-  function init(){
-    $footer.textContent = '最后更新：' + (UPDATED ? new Date(UPDATED).toLocaleString('zh-CN',{hour12:false}) : '—');
+  function countByMajor(name) { return JOBS.filter(function(j){ return j.major === name; }).length; }
 
-    // populate company dropdown
-    var companies = [], seen = {};
-    JOBS.forEach(function(j){ if(!seen[j.company]){ seen[j.company]=true; companies.push(j.company); } });
-    $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+  function renderCategories(){
+    $catGrid.innerHTML = CATEGORIES.map(function(cat){
+      var n = countByMajor(cat.name);
+      var bg = ICON_BG[cat.name] || '#EBF0FF';
+      var ex = (cat.examples || []).filter(function(e){ return e; }).slice(0,3).map(function(e){
+        return '<div class="cat-card__ex"><i class="ph ph-caret-right"></i>' + e + '</div>';
+      }).join('');
+      return '<div class="cat-card" data-major="' + cat.name + '">' +
+        '<div class="cat-card__top">' +
+          '<div class="cat-card__icon" style="background:' + bg + '; color:' + (MAJOR_COLORS[cat.name]||{}).fg + ';"><i class="ph ' + cat.icon + '"></i></div>' +
+          '<span class="cat-card__count">' + n + ' 个岗位</span>' +
+        '</div>' +
+        '<div class="cat-card__name">' + cat.name + '</div>' +
+        '<div class="cat-card__examples">' + ex + '</div>' +
+        '<div class="cat-card__arrow">查看岗位 <i class="ph ph-arrow-right"></i></div>' +
+      '</div>';
+    }).join('');
 
+    $catGrid.querySelectorAll('.cat-card').forEach(function(el){
+      el.addEventListener('click', function(){ openMajor(this.dataset.major); });
+    });
+  }
+
+  function openMajor(name){
+    curMajor = name;
+    $catView.style.display = 'none';
+    $jobsView.style.display = 'block';
+    var cat = CATEGORIES.find(function(c){ return c.name === name; }) || {};
+    $jobsTitle.innerHTML = '<i class="ph ' + (cat.icon || 'ph-folder') + '"></i> ' + name;
     renderFilters();
-    render();
-    $search.addEventListener('input', render);
-    $companyFilter.addEventListener('change', render);
+    renderJobs();
   }
 
   function renderFilters(){
-    $filters.innerHTML = CATS.map(function(c){
-      return '<button class="f-chip'+(c===curCat?' on':'')+'" data-c="'+c+'">'+c+'</button>';
-    }).join('');
-    $filters.querySelectorAll('.f-chip').forEach(function(el){
-      el.addEventListener('click',function(){curCat=el.dataset.c;render();});
+    var companies = [], seen = {};
+    JOBS.filter(function(j){ return j.major === curMajor; }).forEach(function(j){
+      if(!seen[j.company]){ seen[j.company]=true; companies.push(j.company); }
     });
+    $companyFilter.innerHTML = '<option value="">🏢 全部公司</option>' + companies.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
   }
 
-  function render(){
-    renderFilters();
-    var q = $search.value.toLowerCase().trim(), cc = $companyFilter.value;
+  function renderJobs(){
+    var q = $search.value.toLowerCase().trim();
+    var cc = $companyFilter.value;
     var jobs = JOBS.filter(function(j){
-      if(curCat!=='全部' && j.category!==curCat) return false;
-      if(cc && j.company!==cc) return false;
+      if(j.major !== curMajor) return false;
+      if(cc && j.company !== cc) return false;
       if(q) return (j.company+j.title+j.location).toLowerCase().indexOf(q)>=0;
       return true;
     });
-    $count.textContent = '共 '+jobs.length+' 个岗位';
+
+    $count.textContent = '共 ' + jobs.length + ' 个岗位';
+
+    if(!jobs.length){
+      $grid.innerHTML = '<div class="empty"><i class="ph ph-tray"></i><div class="empty__text">该大类暂无岗位，敬请期待</div></div>';
+      return;
+    }
+
     $grid.innerHTML = jobs.map(function(j){
-      return '<div class="card"><div class="card__head"><div><div class="card__title">'+j.title+'</div><div class="card__company">'+j.company+'</div></div><span class="card__tag '+(TAG[j.category]||'')+'">'+j.category+'</span></div><div class="card__loc">📍 '+j.location+'</div><div class="card__ft"><a class="card__link" href="'+j.url+'" target="_blank" rel="noopener">🔗 官网投递</a><span class="card__dl">'+j.start+' · '+j.deadline+'</span></div></div>';
+      var c = MAJOR_COLORS[j.major] || {bg:'#EBF0FF', fg:'#2556B6'};
+      return '<div class="card">' +
+        '<div class="card__head">' +
+          '<div><div class="card__title">' + j.title + '</div><div class="card__company">' + j.company + '</div></div>' +
+          '<span class="card__tag" style="background:' + c.bg + '; color:' + c.fg + ';">' + j.major + '</span>' +
+        '</div>' +
+        '<div class="card__loc">📍 ' + j.location + '</div>' +
+        '<div class="card__ft">' +
+          '<a class="card__link" href="' + j.url + '" target="_blank" rel="noopener">🔗 官网投递</a>' +
+          '<span class="card__dl">' + j.start + ' · ' + j.deadline + '</span>' +
+        '</div>' +
+      '</div>';
     }).join('');
+  }
+
+  $backBtn.addEventListener('click', function(){
+    curMajor = null;
+    $jobsView.style.display = 'none';
+    $catView.style.display = 'block';
+    renderCategories();
+  });
+  $search.addEventListener('input', renderJobs);
+  $companyFilter.addEventListener('change', renderJobs);
+
+  // ===== 初始化 =====
+  if(!JOBS.length || !CATEGORIES.length){
+    document.getElementById('category-view').innerHTML = '<div class="error-msg">数据加载失败：找不到 data.js</div>';
+  } else {
+    $footer.textContent = '最后更新：' + (UPDATED ? new Date(UPDATED).toLocaleString('zh-CN',{hour12:false}) : '—');
+    renderCategories();
   }
 
   // ===== TAB SWITCHING =====
@@ -258,7 +355,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
       var r = await fetch('/api/match', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ resume: resumeText, jobs: JOBS.map(function(j,i){ return {company:j.company, title:j.title, category:j.category, location:j.location, url:j.url, start:j.start, deadline:j.deadline, idx:i}; }) })
+        body: JSON.stringify({ resume: resumeText, jobs: JOBS.map(function(j,i){ return {company:j.company, title:j.title, major:j.major, location:j.location, url:j.url, start:j.start, deadline:j.deadline, idx:i}; }) })
       });
       var data = await r.json();
       if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
@@ -288,7 +385,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
       matchError.style.display='block';
       var isLocal = window.location.protocol === 'file:';
       matchError.innerHTML = isLocal
-        ? '<div class="error-msg">⚠️ 本地预览模式不支持 AI 简历匹配（依赖 EdgeOne 边缘函数后端）。请部署到 EdgeOne 后使用，或本地起服务器并配置后端。</div>'
+        ? '<div class="error-msg">⚠️ 本地预览模式不支持 AI 简历匹配（依赖 EdgeOne 边缘函数后端）。请部署到 EdgeOne 后使用。</div>'
         : '<div class="error-msg">❌ '+e.message+'</div>';
     }
     btnMatch.disabled=false;
