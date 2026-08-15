@@ -57,6 +57,7 @@
     .card__title { font-size: 13px; font-weight: 600; line-height: 1.35; }
     .card__company { font-size: 11px; color: var(--text3); margin-top: 2px; }
     .card__tag { font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .card__new { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--orange); color: #fff; letter-spacing: 0.5px; }
     .card__loc { font-size: 11px; color: var(--text2); }
     .card__ft { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
     .card__link { font-size: 11px; color: var(--blue); text-decoration: none; font-weight: 500; }
@@ -260,7 +261,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
       return '<div class="card">' +
         '<div class="card__head">' +
           '<div><div class="card__title">' + j.title + '</div><div class="card__company">' + j.company + '</div></div>' +
-          '<span class="card__tag" style="background:' + c.bg + '; color:' + c.fg + ';">' + j.major + '</span>' +
+          '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">' +
+            (j.isNew ? '<span class="card__new">NEW</span>' : '') +
+            '<span class="card__tag" style="background:' + c.bg + '; color:' + c.fg + ';">' + j.major + '</span>' +
+          '</div>' +
         '</div>' +
         '<div class="card__loc">📍 ' + j.location + '</div>' +
         '<div class="card__ft">' +
